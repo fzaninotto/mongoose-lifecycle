@@ -29,21 +29,41 @@ module.exports = exports = function lifecycleEventsPlugin(schema) {
   schema.pre('save', function (next) {
     var model = this.model(this.constructor.modelName);
     model.emit('beforeSave', this);
-    this.isNew ? model.emit('beforeInsert', this) : model.emit('beforeUpdate', this);
+    schema.emit('beforeSave', this);
+    if (this.isNew) {
+      model.emit('beforeInsert', this);
+      schema.emit('beforeInsert', this);
+    }
+    else {
+      model.emit('beforeUpdate', this);
+      schema.emit('beforeUpdate', this);
+    }
     this._isNew_internal = this.isNew;
     next();
   });
   schema.post('save', function() {
     var model = this.model(this.constructor.modelName);
     model.emit('afterSave', this);
-    this._isNew_internal ? model.emit('afterInsert', this) : model.emit('afterUpdate', this);
+    schema.emit('afterSave', this);
+    if (this._isNew_internal) {
+      model.emit('afterInsert', this);
+      schema.emit('afterInsert', this);
+    }
+    else {
+      model.emit('afterUpdate', this);
+      schema.emit('afterUpdate', this);
+    }
     this._isNew_internal = undefined;
   });
   schema.pre('remove', function (next) {
-    this.model(this.constructor.modelName).emit('beforeRemove', this);
+    var model = this.model(this.constructor.modelName);
+    model.emit('beforeRemove', this);
+    schema.emit('beforeRemove', this);
     next();
   });
   schema.post('remove', function() {
-    this.model(this.constructor.modelName).emit('afterRemove', this);
+    var model = this.model(this.constructor.modelName);
+    model.emit('afterRemove', this);
+    schema.emit('afterRemove', this);
   });
 };

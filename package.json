@@ -3,6 +3,7 @@
   "description": "Mongoose plugin adding lifecyle events on the model class",
   "version": "1.0.0",
   "author": "Francois Zaninotto",
+  "contributors": ["Shri Ganeshram"],
   "keywords": ["mongodb", "mongoose", "plugin", "presave", "beforesave"],
   "repository": {
     "type": "git",

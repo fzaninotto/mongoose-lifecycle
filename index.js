@@ -27,11 +27,15 @@
  */
 module.exports = exports = function lifecycleEventsPlugin(schema) {
   schema.pre('save', function (next) {
-    var model = this.model(this.constructor.modelName);
-    model.emit('beforeSave', this);
-    this.isNew ? model.emit('beforeInsert', this) : model.emit('beforeUpdate', this);
-    this._isNew_internal = this.isNew;
-    next();
+    try{
+      var model = this.model(this.constructor.modelName);
+      model.emit('beforeSave', this);
+      this.isNew ? model.emit('beforeInsert', this) : model.emit('beforeUpdate', this);
+      this._isNew_internal = this.isNew;
+      next();
+    }catch(e){
+      next(e);
+    }
   });
   schema.post('save', function() {
     var model = this.model(this.constructor.modelName);
@@ -40,8 +44,12 @@ module.exports = exports = function lifecycleEventsPlugin(schema) {
     this._isNew_internal = undefined;
   });
   schema.pre('remove', function (next) {
-    this.model(this.constructor.modelName).emit('beforeRemove', this);
-    next();
+    try{
+      this.model(this.constructor.modelName).emit('beforeRemove', this);
+      next();
+    }catch(e){
+      next(e);
+    }
   });
   schema.post('remove', function() {
     this.model(this.constructor.modelName).emit('afterRemove', this);
